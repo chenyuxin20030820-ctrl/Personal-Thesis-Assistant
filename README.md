@@ -6,6 +6,26 @@
 
 此仓库存放网站源码、依赖和部署说明。GitHub Pages 只能托管静态文件，不能运行本项目的 FastAPI、MySQL 和后台任务；克隆仓库后按下文步骤在本机启动。若需公开访问的网站，还需要另选支持 Python 服务和持久化 MySQL 的运行平台。真实密钥只填在本机 `.env`，不要提交到仓库。
 
+### Railway 私密演示站
+
+仓库提供 `Dockerfile` 和 `railway.json`。演示站使用独立的云端 MySQL，不会自动上传本机数据库。所有持有演示密码的人会看到同一份云端数据，因此只放演示文献，不要导入个人论文或真实对话。
+
+1. 在 Railway 新建项目，连接本 GitHub 仓库 `main` 分支作为 Web 服务，再添加 MySQL 服务。MySQL 保持私有网络，不开启公开 TCP 访问。
+2. 在 Web 服务的 Variables 中添加下列变量。数据库值使用 Railway 界面中的 **Add Reference**，分别引用 MySQL 服务的 `MYSQLHOST`、`MYSQLPORT`、`MYSQLUSER`、`MYSQLPASSWORD`、`MYSQLDATABASE`。不要复制本机 `.env` 到云端。
+
+   | Web 服务变量 | 值 |
+   | --- | --- |
+   | `MYSQL_HOST`、`MYSQL_PORT`、`MYSQL_USER`、`MYSQL_PASSWORD`、`MYSQL_DATABASE` | 分别引用 MySQL 服务同名含义的变量 |
+   | `CLOUD_DEPLOYMENT` | `true` |
+   | `DEMO_ACCESS_PASSWORD` | 自行生成的高强度演示密码，不要写入仓库 |
+   | `DEEPSEEK_API_KEY`、`SERPAPI_API_KEY` | 如需真实 AI 与检索，填写独立密钥并设置服务额度限制 |
+   | `DEEPSEEK_BASE_URL`、`DEEPSEEK_MODEL` | 可省略，沿用应用默认值 |
+
+3. 部署后在 Web 服务的 **Networking → Public Networking** 生成域名。`/healthz` 是无密码的部署健康检查；其余页面、静态文件和 API 使用浏览器 HTTP Basic 登录，用户名固定为 `demo`，密码为上一步配置的值。未配置密码时云端应用拒绝访问。
+4. 用演示密码访问域名，测试首页、检索、上传、精读及结果下载。云端无法连接访问者电脑上的 Zotero Desktop，演示站的 Zotero API 会返回“不可用”。本机版 Zotero 仍按下文方式使用。
+
+此方案适合向少量受邀者展示。若要让陌生用户直接注册并保存各自资料，必须先实现账户、逐用户数据库隔离、文件权限、配额和滥用防护。
+
 ## 首次运行
 
 1. 在项目根目录的 `.env` 中填写 `MYSQL_PASSWORD`、`DEEPSEEK_API_KEY` 和 `SERPAPI_API_KEY`。`OPENALEX_API_KEY` 可选，能提高 OpenAlex 的调用额度。AI 对话与文献精读均使用 DeepSeek `deepseek-flash`，显式关闭思考模式。密钥只保存在本地 `.env`，不会返回给浏览器。

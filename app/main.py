@@ -1,6 +1,9 @@
 import io
 import asyncio
 import logging
+import base64
+import binascii
+import hmac
 from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import quote, urlparse
@@ -9,7 +12,7 @@ from uuid import UUID
 import pymysql
 from docx import Document
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, Response, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -59,6 +62,41 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="个人论文助手", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 templates = Jinja2Templates(directory=ROOT / "templates")
+
+
+def _demo_authorized(header: str | None) -> bool:
+    if not header or not header.startswith("Basic "):
+        return False
+    try:
+        decoded = base64.b64decode(header[6:], validate=True).decode("utf-8")
+        username, password = decoded.split(":", 1)
+    except (ValueError, UnicodeError, binascii.Error):
+        return False
+    return hmac.compare_digest(username, "demo") and hmac.compare_digest(
+        password, settings.demo_access_password
+    )
+
+
+@app.middleware("http")
+async def protect_cloud_demo(request: Request, call_next):
+    if not settings.cloud_deployment:
+        return await call_next(request)
+    if request.url.path == "/healthz":
+        return await call_next(request)
+    if not settings.demo_access_password:
+        return JSONResponse({"detail": "演示站访问密码尚未配置"}, status_code=503)
+    if not _demo_authorized(request.headers.get("authorization")):
+        return Response(status_code=401, headers={"WWW-Authenticate": 'Basic realm="Paper Assistant Demo"'})
+    if request.url.path.startswith("/api/zotero/"):
+        return JSONResponse({"detail": "云端演示站不支持连接本机 Zotero"}, status_code=503)
+    return await call_next(request)
+
+
+@app.get("/healthz")
+async def healthz():
+    if getattr(app.state, "db_error", None):
+        return JSONResponse({"status": "database_unavailable"}, status_code=503)
+    return {"status": "ok"}
 
 
 def require_db():

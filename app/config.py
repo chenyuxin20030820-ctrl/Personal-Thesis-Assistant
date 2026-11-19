@@ -20,6 +20,8 @@ class Settings:
     openalex_api_key: str = os.getenv("OPENALEX_API_KEY", "")
     max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "10"))
     reading_context_tokens: int = int(os.getenv("READING_CONTEXT_TOKENS", "32000"))
+    cloud_deployment: bool = os.getenv("CLOUD_DEPLOYMENT", "").lower() in {"1", "true", "yes"}
+    demo_access_password: str = os.getenv("DEMO_ACCESS_PASSWORD", "")
 
 
 settings = Settings()
