@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 对话 · 个人论文助手</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>.nav-item{text-decoration:none}.chat-heading{display:flex;flex-direction:column;gap:4px;min-width:0}.chat-heading>span{font-size:16px;font-weight:600;color:#566d9a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chat-heading small{font-size:11px;color:#7790b5}@media(max-width:700px){.chat-heading small{font-size:9px}}</style>
+  <link rel="stylesheet" href="/static/chat-markdown.css">
+</head>
+<body>
+  <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v13H9l-5 3zM8 10h.01M12 10h.01M16 10h.01"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M5 2h10l4 4v16H5zM15 2v5h4M8 12h8M8 16h8"/></symbol>
+    <symbol id="i-library" viewBox="0 0 24 24"><path d="M4 3v18M8 3v18M13 3l3 18M18 3l3 18"/></symbol>
+    <symbol id="i-task" viewBox="0 0 24 24"><path d="M8 4H4v17h16V4h-4M9 3h6v4H9zM8 13l2 2 5-5"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M10 2h4l1 3 2 1 3-1 2 4-2 2v2l2 2-2 4-3-1-2 1-1 3h-4l-1-3-2-1-3 1-2-4 2-2v-2L2 9l2-4 3 1 2-1z"/></symbol>
+    <symbol id="i-new" viewBox="0 0 24 24"><path d="M13 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-8M11 15l9-9 2 2-9 9-4 1z"/></symbol>
+    <symbol id="i-paperclip" viewBox="0 0 24 24"><path d="m8 13 7-7a4 4 0 0 1 6 6l-9 9a6 6 0 0 1-9-9l9-9"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><circle cx="8" cy="9" r="2"/><path d="m3 19 6-6 4 4 3-3 5 5"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m2 11 20-9-8 20-3-9zM11 13 22 2"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zM10 21h4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="9" r="3"/><path d="M5 19a7 7 0 0 1 14 0"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2zM19 18l.6 1.4L21 20l-1.4.6L19 22l-.6-1.4L17 20l1.4-.6z"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  </svg>
+  <div class="shell">
+    <nav class="main-nav" aria-label="主导航">
+      <div class="brand"><div class="drop small-drop"></div><strong>个人论文助手</strong></div>
+      <div class="nav-items">
+        <a class="nav-item" href="/"><svg><use href="#i-home"/></svg>首页</a>
+        <a class="nav-item active" href="/chat" aria-current="page"><svg><use href="#i-chat"/></svg>AI对话</a>
+        <a class="nav-item" href="/search"><svg><use href="#i-search"/></svg>文献检索</a>
+        <a class="nav-item" href="/reading"><svg><use href="#i-file"/></svg>文献精读</a>
+        <a class="nav-item" href="/library"><svg><use href="#i-library"/></svg>文献库</a>
+        <a class="nav-item" href="/tasks"><svg><use href="#i-task"/></svg>任务记录</a>
+        <a class="nav-item" href="/settings"><svg><use href="#i-settings"/></svg>设置</a>
+      </div>
+      <div class="profile"><div class="avatar">C</div><div><strong>Chelsea</strong><small>本地个人工作区</small></div><svg><use href="#i-more"/></svg></div>
+    </nav>
+    <script src="/static/profile.js" defer></script>
+    <aside class="history" aria-label="历史对话">
+      <div class="history-head"><h2>历史对话</h2><button id="new-chat" class="icon-button" title="新建对话" aria-label="新建对话"><svg><use href="#i-new"/></svg></button></div>
+      <label class="history-search"><svg><use href="#i-search"/></svg><input id="history-query" placeholder="搜索历史对话..." autocomplete="off"></label>
+      <div id="history-list" class="history-list"></div>
+    </aside>
+    <main class="chat-panel">
+      <header class="topbar"><div class="chat-heading"><span id="chat-title"></span><small>DeepSeek Flash · 不联网 · 非思考模式</small></div><div class="top-actions"><button class="icon-button" data-coming="全局搜索" aria-label="全局搜索"><svg><use href="#i-search"/></svg></button><button class="icon-button bell" data-coming="通知" aria-label="通知"><svg><use href="#i-bell"/></svg></button><button class="icon-button" data-coming="个人中心" aria-label="个人中心"><svg><use href="#i-user"/></svg></button></div></header>
+      <div id="chat-scroll" class="chat-scroll"><section id="welcome" class="welcome"><div class="halo"><div class="drop large-drop"></div><span class="bubble"></span></div><h1>让AI把论文变得更简单</h1><p>我可以帮助你检索文献、精读论文、整理知识与管理资料，<br>让学术研究更高效、更轻松。</p></section><div id="messages" class="messages" aria-live="polite"></div></div>
+      <div class="composer-wrap"><div id="composer" class="composer"><div id="attachments" class="attachments"></div><textarea id="prompt" rows="1" placeholder="输入你的问题..." aria-label="输入你的问题"></textarea><div class="composer-bottom"><div class="attach-actions"><button id="attach-file" class="icon-button" title="上传文件" aria-label="上传文件"><svg><use href="#i-paperclip"/></svg></button><button id="attach-image" class="icon-button" title="上传图片" aria-label="上传图片"><svg><use href="#i-image"/></svg></button></div><div class="send-actions"><button id="send" class="send-button" title="发送" aria-label="发送"><svg><use href="#i-send"/></svg></button></div></div></div><div id="status" class="status" role="status"></div></div>
+    </main>
+  </div>
+  <input id="file-input" type="file" accept=".pdf,.docx,.txt" multiple hidden>
+  <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
