@@ -83,12 +83,13 @@ async def protect_cloud_demo(request: Request, call_next):
         return await call_next(request)
     if request.url.path == "/healthz":
         return await call_next(request)
-    if not settings.demo_access_password:
-        return JSONResponse({"detail": "演示站访问密码尚未配置"}, status_code=503)
-    if not _demo_authorized(request.headers.get("authorization")):
-        return Response(status_code=401, headers={"WWW-Authenticate": 'Basic realm="Paper Assistant Demo"'})
     if request.url.path.startswith("/api/zotero/"):
         return JSONResponse({"detail": "云端演示站不支持连接本机 Zotero"}, status_code=503)
+    if settings.cloud_require_login:
+        if not settings.demo_access_password:
+            return JSONResponse({"detail": "演示站访问密码尚未配置"}, status_code=503)
+        if not _demo_authorized(request.headers.get("authorization")):
+            return Response(status_code=401, headers={"WWW-Authenticate": 'Basic realm="Paper Assistant Demo"'})
     return await call_next(request)
 
 
