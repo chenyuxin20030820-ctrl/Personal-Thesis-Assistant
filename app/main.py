@@ -10,6 +10,7 @@ from urllib.parse import quote, urlparse
 from uuid import UUID
 
 import pymysql
+from openai import APIConnectionError, APIStatusError, APITimeoutError, AuthenticationError, RateLimitError
 from docx import Document
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, Response, JSONResponse
@@ -899,6 +900,18 @@ async def send_message(cid: str, payload: MessageRequest):
     except pymysql.MySQLError:
         log.exception("数据库操作失败")
         raise HTTPException(503, "数据库操作失败，请稍后重试")
+    except AuthenticationError:
+        log.warning("DeepSeek 鉴权失败（HTTP 401）")
+        raise HTTPException(502, "DeepSeek API Key 无效；请检查当前公网服务的 DEEPSEEK_API_KEY")
+    except RateLimitError:
+        log.warning("DeepSeek 请求受限（HTTP 429）")
+        raise HTTPException(502, "DeepSeek 请求额度或速率受限，请检查账户额度后重试")
+    except APIStatusError as exc:
+        log.warning("DeepSeek 返回 HTTP %s", exc.status_code)
+        raise HTTPException(502, f"DeepSeek 服务返回 HTTP {exc.status_code}，请检查模型配置和账户状态")
+    except (APIConnectionError, APITimeoutError):
+        log.warning("DeepSeek 连接或请求超时", exc_info=True)
+        raise HTTPException(502, "无法连接 DeepSeek，或请求超时；请稍后重试")
     except Exception:
         log.exception("模型调用失败")
         raise HTTPException(502, "AI 回复失败；你的提问已保存，请稍后重试")
