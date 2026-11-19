@@ -1,10 +1,12 @@
 # 个人论文助手
 
+**在线体验：**[打开个人论文助手公网网站](https://personal-thesis-assistant-production.up.railway.app/)
+
 本地运行的 Python 前后端一体应用。FastAPI 同时提供页面和接口；LangChain Agent 处理对话；MySQL 保存会话、消息及附件。
 
 ## GitHub 仓库与运行方式
 
-此仓库存放网站源码、依赖和部署说明。GitHub Pages 只能托管静态文件，不能运行本项目的 FastAPI、MySQL 和后台任务；克隆仓库后按下文步骤在本机启动。若需公开访问的网站，还需要另选支持 Python 服务和持久化 MySQL 的运行平台。真实密钥只填在本机 `.env`，不要提交到仓库。
+此仓库存放网站源码、依赖和部署说明。公网演示站部署在 Railway，点击上方“在线体验”即可访问。GitHub Pages 只能托管静态文件，不能运行本项目的 FastAPI、MySQL 和后台任务；克隆仓库后也可按下文步骤在本机启动。真实密钥只填在本机 `.env` 或 Railway Variables，不要提交到仓库。
 
 ### Railway 公开演示站
 
